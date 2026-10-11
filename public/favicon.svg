@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Neo-brutalist ink drop shadow -->
+  <rect x="7" y="7" width="50" height="50" rx="10" fill="#1b1c1e" />
+  <!-- Main yellow stamp tile -->
+  <rect x="4" y="4" width="50" height="50" rx="10" fill="#fef08a" stroke="#1b1c1e" stroke-width="3.5" />
+  <!-- Tiny Tools Lightning Bolt -->
+  <path d="M32 10 L16 32 L28 32 L24 48 L42 26 L30 26 Z" fill="#1b1c1e" stroke="#1b1c1e" stroke-width="1.5" stroke-linejoin="round" />
+  <!-- Electric inner accent -->
+  <path d="M31 15 L20 31 L29 31 L26 42 L38 27 L29 27 Z" fill="#facc15" />
+</svg>
