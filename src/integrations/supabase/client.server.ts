@@ -34,13 +34,20 @@ function createSupabaseAdminClient() {
   const SUPABASE_SERVICE_ROLE_KEY = process.env['SUPABASE_SERVICE_ROLE_KEY'];
 
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-    const missing = [
-      ...(!SUPABASE_URL ? ['SUPABASE_URL'] : []),
-      ...(!SUPABASE_SERVICE_ROLE_KEY ? ['SUPABASE_SERVICE_ROLE_KEY'] : []),
-    ];
-    const message = `Missing Supabase environment variable(s): ${missing.join(', ')}. Connect Supabase in Tiny Tools.`;
-    console.error(`[Supabase] ${message}`);
-    throw new Error(message);
+    console.warn('[Supabase Admin] Missing admin keys. Running in standalone mode.');
+    return {
+      auth: {
+        admin: {
+          getUserById: async () => ({ data: { user: null }, error: null }),
+        },
+      },
+      from: () => ({
+        select: () => Promise.resolve({ data: [], error: null }),
+        insert: () => Promise.resolve({ data: null, error: null }),
+        update: () => Promise.resolve({ data: null, error: null }),
+        delete: () => Promise.resolve({ data: null, error: null }),
+      }),
+    } as unknown as ReturnType<typeof createClient<Database>>;
   }
 
   return createClient<Database>(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {

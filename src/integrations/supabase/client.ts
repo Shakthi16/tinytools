@@ -46,6 +46,37 @@ function createSupabaseFetch(supabaseUrl: string, supabaseKey: string): typeof f
 }
 
 
+function createMockSupabaseClient(): ReturnType<typeof createClient<Database>> {
+  const dummyAuth = {
+    onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+    getUser: async () => ({ data: { user: null }, error: null }),
+    getSession: async () => ({ data: { session: null }, error: null }),
+    signOut: async () => ({ error: null }),
+    signInWithOAuth: async () => ({ error: new Error('Auth not configured') }),
+    setSession: async () => ({ data: { session: null, user: null }, error: null }),
+  };
+
+  const createDummyQuery = () => {
+    const builder: Record<string, unknown> = {
+      select: () => Promise.resolve({ data: [], error: null }),
+      insert: () => Promise.resolve({ data: null, error: null }),
+      update: () => Promise.resolve({ data: null, error: null }),
+      delete: () => Promise.resolve({ data: null, error: null }),
+      single: () => Promise.resolve({ data: null, error: null }),
+      maybeSingle: () => Promise.resolve({ data: null, error: null }),
+      eq: () => builder,
+      order: () => builder,
+      limit: () => builder,
+    };
+    return builder;
+  };
+
+  return {
+    auth: dummyAuth,
+    from: createDummyQuery,
+  } as unknown as ReturnType<typeof createClient<Database>>;
+}
+
 function createSupabaseClient() {
   // Use import.meta.env for client-side (Vite build-time replacement)
   // Fall back to process.env for SSR (server-side rendering)
@@ -53,13 +84,8 @@ function createSupabaseClient() {
   const SUPABASE_PUBLISHABLE_KEY = import.meta.env['VITE_SUPABASE_PUBLISHABLE_KEY'] || process.env['SUPABASE_PUBLISHABLE_KEY'];
 
   if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
-    const missing = [
-      ...(!SUPABASE_URL ? ['SUPABASE_URL'] : []),
-      ...(!SUPABASE_PUBLISHABLE_KEY ? ['SUPABASE_PUBLISHABLE_KEY'] : []),
-    ];
-    const message = `Missing Supabase environment variable(s): ${missing.join(', ')}. Connect Supabase in Tiny Tools.`;
-    console.error(`[Supabase] ${message}`);
-    throw new Error(message);
+    console.warn('[Supabase] Missing Supabase environment variables. Running in standalone mode.');
+    return createMockSupabaseClient();
   }
 
   return createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
