@@ -92,8 +92,28 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: appCss,
       },
+      { rel: "canonical", href: "https://tinytools.browserlabs.workers.dev" },
       { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
       { rel: "alternate icon", href: "/favicon.ico", type: "image/x-icon" },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebApplication",
+          name: "Tiny Tools",
+          url: "https://tinytools.browserlabs.workers.dev",
+          description: "50+ fast, private everyday utilities for creators and developers. 100% in-browser processing with zero file uploads.",
+          applicationCategory: "UtilitiesApplication",
+          operatingSystem: "All",
+          offers: {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD",
+          },
+        }),
+      },
     ],
   }),
   shellComponent: RootShell,
